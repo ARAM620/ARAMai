@@ -22,7 +22,7 @@ def translate_korean_to_english(korean_name, dic):
         print(f"'{korean_name}'는 사전에 없습니다. 추가하시겠습니까? (y/n)")
         choice = input().strip().lower()
         if choice == 'y':
-            print(f"'{korean_name}'의 영어 이름을 입력하세요\n> ")
+            print(f"'{korean_name}'의 영어 이름을 입력하세요")
             eng_name = input().strip()
             if eng_name:
                 dic[korean_name] = eng_name

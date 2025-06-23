@@ -2,7 +2,7 @@ import speech_recognition as sr
 import numpy as np
 import time
 
-def listen_continuous(threshold=300, slience_limit=3):
+def listen_continuous(threshold=200, slience_limit=2):
     r = sr.Recognizer()
     mic = sr.Microphone()
     slience_count = 0

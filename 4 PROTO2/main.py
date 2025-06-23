@@ -9,6 +9,12 @@ def process_command(text, dic):
     parsed = parse_command(text)
     intent, target = parsed["intent"], parsed["target"]
 
+    success = handle_command(intent, target)
+    print(f"intent: {intent}, target: {target}")    
+    if success:
+        print(f"{target} 실행\n")
+        return
+
     en_target = translate_korean_to_english(target, dic)
     if en_target is None:
         return
@@ -26,7 +32,7 @@ def voice_mode(dic):
         if text == "__EXIT__":
             return "exit"
 
-        if text.strip() == "텍스트 입력":
+        if text.strip().lower() == "텍스트 입력" or "텍스트" in text.lower():
             print("텍스트 입력 모드로 전환")
             return "text"
 
@@ -38,7 +44,7 @@ def text_mode(dic):
         text = input("input > ").strip()
         if not text:
             continue
-        if text == "음성 입력":
+        if "음성 입력" in text:
             print("음성 입력 모드로 전환")
             return "voice"
         if text in ["종료", "exit", "quit"]:
