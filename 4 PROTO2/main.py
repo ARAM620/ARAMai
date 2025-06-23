@@ -1,11 +1,46 @@
 #main.py
+import re
+import threading
+import time
 
 from utils.intent_parser import parse_command
 from command.core import handle_command
 from utils.dict_generator import load_dictionary, save_dictionary, translate_korean_to_english
 from input.voice_input import listen_continuous
 
+def parse_schedule(text):
+    match = re.search(r"(\d+)\s*(초|분|시간)\s*후", text)
+    if not match:
+        return None
+    amount = int(match.group(1))
+    unit = match.group(2)
+
+    if unit == "초":
+        return amount
+    elif unit == "분":
+        return amount * 60
+    elif unit == "시간":
+        return amount * 3600
+    return None
+
+def run_scheduled_command(delay, command_text, dictionary):
+    def task():
+        time.sleep(delay)
+        print(f"[예약 실행] {command_text}")
+        process_command(command_text, dictionary)
+    threading.Thread(target=task, daemon=True).start()
+
 def process_command(text, dic):
+    delay = parse_schedule(text)
+    if delay is not None:
+        cleaned_text = re.sub(r"\d+\s*(초|분|시간)\s*후", "", text).strip()
+        if not cleaned_text:
+            print("[오류] 실행할 명령이 없습니다. 예약 등록 취소됨.\n")
+            return        
+        print(f"[예약 등록] {delay}초 후 실행 예약: {cleaned_text}")
+        run_scheduled_command(delay, cleaned_text, dic)
+        return
+    
     parsed = parse_command(text)
     intent, target = parsed["intent"], parsed["target"]
 
@@ -14,6 +49,7 @@ def process_command(text, dic):
     if success:
         print(f"{target} 실행\n")
         return
+    print(f"[정보] '{target}' 직접 실행 실패, 번역을 시도합니다...")
 
     en_target = translate_korean_to_english(target, dic)
     if en_target is None:

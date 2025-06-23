@@ -1,6 +1,7 @@
 from command.program_launcher import execute_program
 from command.file_launcher import open_file
 from command.directory_finder import find_and_open_directory
+from command.system_command import handle_system_command
 
 def handle_command(intent: str, target: str):
     intent = intent.strip().lower()
@@ -13,6 +14,9 @@ def handle_command(intent: str, target: str):
 
     elif intent == "디렉터리 찾기":
         return find_and_open_directory(target)
+
+    elif intent == "시스템 명령":
+        return handle_system_command(target)
 
     else:
         print(f"[알림] '{intent}'는 지원하지 않는 명령입니다.")
