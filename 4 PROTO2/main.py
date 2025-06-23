@@ -1,4 +1,12 @@
+#main.py
+
 from command.core import handle_command
+
+INTENT_MAP = {
+    "1": "앱 열기",
+    "2": "파일 열기",
+    "3": "디렉토리 찾기"
+}
 
 def main():
     print("지원하는 intent: [1] 앱 열기, [2] 파일 열기, [3] 디렉토리 찾기")
@@ -8,6 +16,8 @@ def main():
         if intent.lower() in ["종료", "exit", "quit"]:
             print("종료합니다.")
             break
+
+        intent = INTENT_MAP.get(intent, intent)
 
         target = input("Target > ").strip()
         if not target:
