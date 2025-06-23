@@ -3,27 +3,62 @@
 from utils.intent_parser import parse_command
 from command.core import handle_command
 from utils.dict_generator import load_dictionary, save_dictionary, translate_korean_to_english
+from input.voice_input import listen_continuous
 
-def main():
-    print("앱, 파일, 디렉터리 실행 명령 입력")
+def process_command(text, dic):
+    parsed = parse_command(text)
+    intent, target = parsed["intent"], parsed["target"]
 
-    dic = load_dictionary()
+    en_target = translate_korean_to_english(target, dic)
+    if en_target is None:
+        return
 
-    while True:
-        text = input("input > ").strip()
-        if text.lower() in ["종료", "exit", "quit"]:
-            break
+    print(f"intent: {intent}, target: {en_target}")
+    success = handle_command(intent, en_target)
+    print(f"{target} 실행\n" if success else f"{target} 실행 실패")    
 
-        parsed = parse_command(text)
-        intent, target = parsed["intent"], parsed["target"]
-
-        en_target = translate_korean_to_english(target, dic)
-        if en_target is None:
+def voice_mode(dic):
+    print("음성 입력 모드")
+    for text in listen_continuous():
+        if text is None:
             continue
 
-        print(f"intent: {intent}, target: {en_target}")
-        success = handle_command(intent, en_target)
-        print(f"{target} 실행\n" if success else f"{target} 실행 실패")
+        if text == "__EXIT__":
+            return "exit"
+
+        if text.strip() == "텍스트 입력":
+            print("텍스트 입력 모드로 전환")
+            return "text"
+
+        process_command(text, dic)
+
+def text_mode(dic):
+    print("텍스트 입력 모드")
+    while True:
+        text = input("input > ").strip()
+        if not text:
+            continue
+        if text == "음성 입력":
+            print("음성 입력 모드로 전환")
+            return "voice"
+        if text in ["종료", "exit", "quit"]:
+            return "exit"
+
+        process_command(text, dic)
+
+def main():
+    print("ARAM AI 실행")
+    dic = load_dictionary()
+    mode = "voice"
+
+    while True:
+        if mode == "voice":
+            mode = voice_mode(dic)
+        elif mode == "text":
+            mode = text_mode(dic)
+        elif mode == "exit":
+            print("ARAM AI 종료")
+            break
 
 '''
 INTENT_MAP = {
