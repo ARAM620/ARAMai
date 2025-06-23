@@ -7,3 +7,4 @@ def translate_to_english(text: str) -> str:
         return GoogleTranslator(source='auto', target='en').translate(text)
     except Exception as e:
         return text
+

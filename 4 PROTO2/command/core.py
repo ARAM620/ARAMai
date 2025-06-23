@@ -11,7 +11,7 @@ def handle_command(intent: str, target: str):
     elif intent == "파일 열기":
         return open_file(target)
 
-    elif intent == "디렉토리 찾기":
+    elif intent == "디렉터리 찾기":
         return find_and_open_directory(target)
 
     else:
